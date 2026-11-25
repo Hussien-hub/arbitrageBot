@@ -112,6 +112,18 @@ journalctl -u zecarb -f                   # live logs; stop with: sudo systemctl
 
 A tripped kill switch exits cleanly, so systemd does not restart it.
 
+**Checking results**
+
+Every 10s the log records each route's best net return in that window. `gap_report.py` summarizes
+them: best and median per route, how many windows came within reach of the +0.3% threshold, and the
+10 best moments.
+
+```bash
+journalctl -u zecarb -o cat | .venv/bin/python gap_report.py                          # whole run
+journalctl -u zecarb -o cat --since "24 hours ago" | .venv/bin/python gap_report.py   # last day
+journalctl -u zecarb -o cat | grep -E "SIGNAL|CYCLE|KILL"                             # trades and stops
+```
+
 **Updating later**
 
 ```bash
