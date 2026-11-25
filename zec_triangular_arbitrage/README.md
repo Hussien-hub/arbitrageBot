@@ -83,11 +83,13 @@ history. If a run trips the kill switch, check the account, then `rm state.json`
 
 **5. Run as a service (after the test cycles look right)**
 
-Run this from inside `zec_triangular_arbitrage`. It runs whatever mode `.env` says. Switch `.env`
+The block starts with `cd` because `$PWD` must be the bot's folder. If you cloned somewhere other
+than your home folder, adjust that line. The service runs whatever mode `.env` says. Switch `.env`
 to `MODE=LIVE` and `LIVE_TRADING_ENABLED=true`, with a small `MAX_CYCLE_USDT`, only when you
 mean to trade.
 
 ```bash
+cd ~/arbitrageBot/zec_triangular_arbitrage
 sudo tee /etc/systemd/system/zecarb.service >/dev/null <<EOF
 [Unit]
 Description=ZEC triangular arbitrage bot
