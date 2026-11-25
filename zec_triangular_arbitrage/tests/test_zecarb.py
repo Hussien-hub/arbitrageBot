@@ -179,6 +179,22 @@ def test_forced_test_cycle_loss_is_not_a_failure_but_counts_toward_daily_limit()
     assert "DAILY_LOSS_LIMIT" in state.data["reason"]
 
 
+def test_gap_report_summarizes_status_lines():
+    from gap_report import report
+    out = report([
+        "2026-11-25 21:00:00,000 INFO No fresh, fully depth-covered route in this window.",
+        "2026-11-25 21:00:10,000 INFO Best in window: A: USDT>ZEC>BTC>USDT return=-0.3211% profit=-3.2063"
+        " | B: USDT>BTC>ZEC>USDT return=0.3100% profit=3.1000",
+        "2026-11-25 21:00:10,100 WARNING SIGNAL B: USDT>BTC>ZEC>USDT start=999 end=1002.1 profit=3.1 return=0.3100%",
+        "2026-11-25 21:00:20,000 INFO Best in window: A: USDT>ZEC>BTC>USDT return=-0.1500% profit=-1.5"
+        " | B: USDT>BTC>ZEC>USDT return=-0.2500% profit=-2.5",
+    ]).splitlines()
+    assert out[0].startswith("2 windows") and "1 with stale" in out[0] and "1 SIGNAL" in out[0]
+    assert out[1].startswith("route A: best -0.1500%") and ">=-0.2%: 1" in out[1]
+    assert out[2].startswith("route B: best +0.3100%") and ">=+0.3%: 1" in out[2]
+    assert out[4] == "  2026-11-25 21:00:10,000  route B  +0.3100%"
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
